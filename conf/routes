@@ -1,0 +1,15 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                                       Application.index
+# Map static resources from the /app/public folder to the /public path
+GET     /public/                                staticDir:public
+
+GET 	/monitor/web/{device}					Monitor.web
+
+POST	/policy/save/							Policy.save
+
+# Catch all
+*       /{controller}/{action}                  {controller}.{action}
