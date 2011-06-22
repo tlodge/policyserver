@@ -41,7 +41,6 @@ public class Monitor extends Controller {
     			String row[] = rows[i].split(DELIMETER);
     			
     			if (!last.equals(row[1])){
-    				System.err.println("====>" + row[0] + " " + row[1]);
     				final int start = row[0].indexOf('@');
     				final int end = row[0].indexOf('@', start + 1);
     				final String time = row[0].substring(start + 1, end);

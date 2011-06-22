@@ -312,7 +312,7 @@ public class JavaSRPC
 
 			final byte[] queryBytes = (query + "\0").getBytes(CHARSET);
 			final int fragmentCount = queryBytes.length / FRAGMENT_SIZE + 1;
-
+			final int localsubport = new Random().nextInt();
 			for (int fragment = 1; fragment < fragmentCount; fragment++)
 			{
 				final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -323,7 +323,7 @@ public class JavaSRPC
 				os.write(queryBytes, start, FRAGMENT_SIZE);
 				os.flush();
 
-				sendCommand(Command.FRAGMENT, RPCState.FRAGMENT_SENT, bos.toByteArray(), fragment, fragmentCount, subport, seqno);
+				sendCommand(Command.FRAGMENT, RPCState.FRAGMENT_SENT, bos.toByteArray(), fragment, fragmentCount, localsubport/*subport*/, seqno);
 				waitForState(EnumSet.of(RPCState.FACK_RECEIVED, RPCState.TIMEDOUT));
 				if (state == RPCState.TIMEDOUT) { throw new IOException(); }
 			}
