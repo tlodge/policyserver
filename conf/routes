@@ -8,7 +8,7 @@ GET     /                                       Application.index
 GET     /public/                                staticDir:public
 
 GET 	/monitor/web/{device}					Monitor.web
-
+					
 POST	/policy/save/							Policy.save
 
 # Catch all

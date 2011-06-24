@@ -1,11 +1,11 @@
 package models;
 
 public class Website {
-	public String 	site;
+	public String 	url;
 	public Long timestamp;
 	
-	public Website(String site, Long timestamp){
-		this.site = site;
+	public Website(String url, Long timestamp){
+		this.url = url;
 		this.timestamp = timestamp;
 	}
 }

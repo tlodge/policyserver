@@ -11,7 +11,7 @@ public class SRPCManager {
 		init();
 	}
 	
-	private static void init(){
+	private void init(){
 		try{
 			System.err.println("initing the srpc client");
 			srpcclient = new JavaSRPC();
@@ -29,7 +29,7 @@ public class SRPCManager {
 		return sharedManager;
 	}
 	
-	public static String query(String query){
+	public  String query(String query){
 		if (!srpcclient.isConnected()){
 			init();
 		}
