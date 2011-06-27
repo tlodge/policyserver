@@ -1,7 +1,7 @@
 package models.policy;
 
 public class Action {
-	String actionsubject;
-	String action;
-	String[] arguments;
+	public String subject;
+	public String type;
+	public String[] arguments;
 }

@@ -3,6 +3,6 @@ package models.policy;
 import java.util.Hashtable;
 
 public class Condition {
-	String type;
-	Hashtable arguments;
+	public String type;
+	public Hashtable arguments;
 }

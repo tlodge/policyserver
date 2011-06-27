@@ -2,6 +2,9 @@ package policy;
 
 import homework.JavaSRPC;
 import homework.SRPCManager;
+import homework.handler.ConditionHandler;
+import homework.handler.MonitorHandler;
+import homework.handler.URLConditionHandler;
 
 import java.net.InetAddress;
 
@@ -15,6 +18,7 @@ import models.policy.Condition;
 public class PolicyManager {
 
 	private static PolicyManager sharedManager = null;
+	private static int policyindex = 0;
 	
 	private PolicyManager(){
 		init();
@@ -35,14 +39,45 @@ public class PolicyManager {
 		return sharedManager;
 	}
 	
-	public boolean save (String policy){
-		XStream xstream = new XStream(new JettisonMappedXmlDriver());
-		xstream.alias("policy", Policy.class);
-		xstream.alias("action", Action.class);
-		xstream.alias("condition", Condition.class);
-		Policy p = (Policy) xstream.fromXML(policy);
-		System.err.println(p.identity);
+	public String save (String policy){
+		boolean success  = false;
 		
-		return true;
+		XStream xstream = new XStream(new JettisonMappedXmlDriver());
+		
+		xstream.alias("policy", Policy.class);
+		
+		xstream.alias("action", Action.class);
+		
+		xstream.alias("condition", Condition.class);
+		
+		Policy p = (Policy) xstream.fromXML(policy);
+		
+		//if already have an identity then update the policy and save it
+		
+		String identity = store(p);
+		//take the conditions and register them with the conditionActionhandler
+		System.err.println("identity is " + identity);
+		
+		System.err.println("policy is null is " + (p==null));
+		if (identity != null){
+			System.err.println("regstering policy with condition handler");
+			success = ConditionHandler.sharedHandler().registerPolicy(p);
+		}
+		//update the associated monitor handlers
+		if (success){
+			success = MonitorHandler.sharedHandler().registerPolicy(p);
+		}
+		
+		if (success)
+			return identity;
+		
+		return null;
+	}
+	
+	private String store(Policy p){
+		if (p.identity != null){
+			return p.identity;
+		}
+		return String.valueOf(policyindex++);
 	}
 }
