@@ -14,8 +14,7 @@ public class Policy extends Controller {
 			String policy = params.get("policy");
 			System.err.println("policy is " + policy);
 			String identity = PolicyManager.sharedManager().save(policy);
-			Boolean success = identity == null ? false : true;
-			
+			String success = identity == null ? "failure" : "success";
 	        renderJSON(new ResponseMessage(success, identity));
 		}
 }

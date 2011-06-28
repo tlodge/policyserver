@@ -16,7 +16,7 @@ public class Block extends Controller{
 		
 		try{
 		
-			URL url = new URL("http://localhost/ws.v1/homework/deny/" + device);
+			URL url = new URL("http://10.2.0.2/ws.v1/homework/deny/" + "d8:a2:5e:73:6b:7e");
 			
 			URLConnection connection = url.openConnection();
 			
@@ -24,7 +24,7 @@ public class Block extends Controller{
 
 			OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
 			
-			out.write("block");
+			out.write("block=block");
 			
 			out.close();
 
@@ -33,9 +33,13 @@ public class Block extends Controller{
 			String decodedString;
 
 			while ((decodedString = in.readLine()) != null) {
+				//System.err.println("SUCCCESSSSSSSS");
 				System.out.println(decodedString);
 			}
+				
+			
 			in.close();
+			System.err.println("finished...");
 		}catch(Exception e){
 			System.err.println(e.getMessage());
 		}

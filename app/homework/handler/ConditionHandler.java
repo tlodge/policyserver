@@ -45,6 +45,6 @@ public class ConditionHandler {
 			System.err.println("REGISTERING VISITING POLICY...");
 			return urlConditionHandler.register(policy);
 		}
-		return false;
+		return true;
 	}
 }
