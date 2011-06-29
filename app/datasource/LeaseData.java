@@ -33,8 +33,8 @@ public class LeaseData {
 		return true;
 	}
 	
-	public void lookup(String macaddr){
-		
+	public String lookup(String macaddr){
+		return "10.2.0.1";
 	}
 	
 	public void parse(String data){

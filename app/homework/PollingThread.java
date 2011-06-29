@@ -1,8 +1,7 @@
 package homework;
 
-import homework.handler.ConditionHandler;
-import homework.handler.URLConditionHandler;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,10 +10,12 @@ import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import policy.PolicyManager;
+
 import datasource.URLData;
 
 import models.Callback;
-import models.URLConditionCallback;
+import models.policy.queries.Query;
 
 
 
@@ -27,17 +28,9 @@ public class PollingThread extends Thread
 	private final int TIME_DELTA = 5000;
 	private final JavaSRPC rpc = new JavaSRPC();
 	
-	private final URLConditionHandler urlconditionhandler = new URLConditionHandler();
 	
 	private void init(){
 	
-		//HashSet<String> hs = new HashSet<String>();
-		//hs.add("www.drupal.org");
-		//try{
-			//URL testurl = new URL("http://10.2.0.2/ws.v1/homework/permit/00:26:B0:5D:97:59");
-	//	}catch(Exception e){
-			
-		//}
 	}
 	
 	@Override
@@ -67,8 +60,21 @@ public class PollingThread extends Thread
 				{
 					try
 					{
-						pollURLTable();
-						ConditionHandler.sharedHandler().handleData(ConditionHandler.TableType.URL);
+						for (Query q : PolicyManager.sharedManager().activePolicies.values()){
+							String query = q.toString();
+							
+							System.err.println(query);
+							
+							try {
+								q.process(rpc.call(query));
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+						
+						
+						//pollURLTable();
+						//ConditionHandler.sharedHandler().handleData(ConditionHandler.TableType.URL);
 					}
 					catch (final Exception e)
 					{
@@ -99,7 +105,7 @@ public class PollingThread extends Thread
 		}
 	}
 
-	
+	/*
 	private void pollURLTable() throws Exception{
 		String urlQuery;
 		long last = URLData.sharedData().getLatestTs();
@@ -116,5 +122,5 @@ public class PollingThread extends Thread
 			System.err.println(urlQuery);
 		}
 		URLData.sharedData().parse(rpc.call(urlQuery));
-	}
+	}*/
 }

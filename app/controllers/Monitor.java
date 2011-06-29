@@ -9,26 +9,25 @@ import datasource.URLData;
 
 import models.Sites;
 import models.Website;
-
+import homework.handler.MonitorHandler;
 
 import play.mvc.Controller;
 
 public class Monitor extends Controller {
 
-	private static final String DELIMETER = "\\<\\|\\>";
-	private static String last = "";
 	
     public static void web(String device) {
-    	
-    	//String since = params.get("since");
-    	//String limit = params.get("limit");
-    	System.err.println("latest sites size for x is " + URLData.sharedData().getSites().size());
-        renderJSON(URLData.sharedData().getSites(/*device*/));
+    	System.err.println("in monitor..." + device);
+    	renderJSON(MonitorHandler.sharedHandler().getLatestSites(device));
     }
 
     
-    public static void bandwidth(){
-    	
+    public static void bandwidth(String device){
+    	renderJSON(MonitorHandler.sharedHandler().getLatestBandwidth(device));
+    }
+    
+    public static void activity(String device){
+    	renderJSON(MonitorHandler.sharedHandler().getLatestActivity(device));
     }
 }
 

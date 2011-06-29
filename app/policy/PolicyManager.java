@@ -2,11 +2,11 @@ package policy;
 
 import homework.JavaSRPC;
 import homework.SRPCManager;
-import homework.handler.ConditionHandler;
 import homework.handler.MonitorHandler;
-import homework.handler.URLConditionHandler;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
@@ -14,10 +14,17 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import models.policy.Action;
 import models.policy.Policy;
 import models.policy.Condition;
+import models.policy.queries.ActivityQuery;
+import models.policy.queries.BandwidthQuery;
+import models.policy.queries.Query;
+import models.policy.queries.URLQuery;
 
 public class PolicyManager {
 
 	private static PolicyManager sharedManager = null;
+	
+	public Hashtable<String, Query> activePolicies; 
+	
 	private static int policyindex = 0;
 	
 	private PolicyManager(){
@@ -26,7 +33,7 @@ public class PolicyManager {
 	
 	private void init(){
 		try{
-			
+			activePolicies = new Hashtable<String, Query>();
 		}catch(Exception e){
 			System.err.println("error creating policy manager " + e.getMessage());
 		}
@@ -40,7 +47,7 @@ public class PolicyManager {
 	}
 	
 	public String save (String policy){
-		boolean success  = false;
+		boolean success  = true;
 		
 		XStream xstream = new XStream(new JettisonMappedXmlDriver());
 		
@@ -52,20 +59,17 @@ public class PolicyManager {
 		
 		Policy p = (Policy) xstream.fromXML(policy);
 		
-		//if already have an identity then update the policy and save it
-		
 		String identity = store(p);
-		//take the conditions and register them with the conditionActionhandler
-		System.err.println("identity is " + identity);
 		
-		System.err.println("policy is null is " + (p==null));
 		if (identity != null){
-			System.err.println("regstering policy with condition handler");
-			success = ConditionHandler.sharedHandler().registerPolicy(p);
-		}
-		//update the associated monitor handlers
-		if (success){
-			success = MonitorHandler.sharedHandler().registerPolicy(p);
+	
+			if (p.condition.type.equals("visiting")){
+				activePolicies.put(identity, new URLQuery(p));
+			}else if (p.condition.type.equals("bandwidth")){
+				activePolicies.put(identity, new BandwidthQuery(p));
+			}else if (p.condition.type.equals("timed")){
+				activePolicies.put(identity, new ActivityQuery(p));
+			}
 		}
 		
 		if (success)
