@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import policy.PolicyManager;
 
+import datasource.LeaseData;
 import datasource.URLData;
 
 import models.Callback;
@@ -60,6 +61,8 @@ public class PollingThread extends Thread
 				{
 					try
 					{
+						updateLeases();
+						
 						for (Query q : PolicyManager.sharedManager().activePolicies.values()){
 							String query = q.toString();
 							
@@ -105,6 +108,11 @@ public class PollingThread extends Thread
 		}
 	}
 
+	private void updateLeases() throws Exception{
+		String urlQuery = LeaseData.sharedData().getQuery();
+		LeaseData.sharedData().parse(rpc.call(urlQuery));
+	}
+	
 	/*
 	private void pollURLTable() throws Exception{
 		String urlQuery;

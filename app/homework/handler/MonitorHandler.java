@@ -2,7 +2,7 @@ package homework.handler;
 
 import homework.JavaSRPC;
 import homework.PollingThread;
-
+import datasource.Util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -70,9 +70,9 @@ public class MonitorHandler {
 			
 			if (lastbwrequest > 0){
 				final String s = String.format("@%016x@", lastbwrequest * 1000000);
-				query = String.format("SQL:select sum(nbytes), daddr from Flows [since %s] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr",s,ipaddr, ipaddr);		
+				query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [since %s] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr",s,ipaddr, ipaddr);		
 			}else{
-				query = String.format("SQL:select sum(nbytes), daddr from Flows [range 5 seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", ipaddr, ipaddr);
+				query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [range 5 seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", ipaddr, ipaddr);
 
 			}
 			
@@ -119,14 +119,14 @@ public class MonitorHandler {
 			String ipaddr = LeaseData.sharedData().lookup(device);
 			
 			if (lastactivityrequest > 0){
-				final String s = String.format("@%016x@", lastbwrequest * 1000000);
+				final String s = String.format("@%016x@", lastactivityrequest * 1000000);
 				query = String.format("SQL:select timestamp, saddr from Flows [since %s] where saddr contains \"%s\"",s,ipaddr);		
 			}else{
 				query = String.format("SQL:select timestamp, saddr from Flows [range 5 seconds] where saddr contains \"%s\"", ipaddr);
 
 			}
 			
-			System.err.println(query);
+			System.err.println("qry = " + query);
 			
 			return processactivity(rpc.call(query), ipaddr);
 			
@@ -138,10 +138,13 @@ public class MonitorHandler {
 	}
 	
 	private long processactivity(String data, String ipaddr){
+		lastactivityrequest = 0L;
 		String[] rows = data.split("\n");
 		if (rows.length > 2){
+			System.err.println("activity - got " + rows[rows.length-1]);
 			String row[] = rows[rows.length-1].split(DELIMETER);
-			return Long.valueOf(row[0]);
+			lastactivityrequest = Util.convertTs(row[0]) + 1;
+			return lastactivityrequest;
 		}
 		return 0L;
 	}
@@ -155,11 +158,12 @@ public class MonitorHandler {
     	if (rows.length > 2){
     		
     		for (int i = 2; i < rows.length; i++){
-    			System.err.println(rows[i]);
+    
     			String row[] = rows[i].split(DELIMETER);
-    			if (row[1].equals(ipaddr)){
-    				System.err.println(row[0]);
-    				return Long.valueOf(row[0]);
+    			if (row[2].equals(ipaddr)){
+    				System.err.println("bwidth - got " + row[1]);
+    				lastbwrequest = Util.convertTs(row[0]) + 1;
+    				return Long.valueOf(row[1]);
     			}
     		}
     	}	
@@ -172,25 +176,30 @@ public class MonitorHandler {
     	String lastsite = "";
     	String lastsrc  = "";
     	
-    	lastsiterequest = 0;
+    	lastsiterequest = 0L;
     	
     	if (rows.length > 2){
     		for (int i = 2; i < rows.length; i++){
     			String row[] = rows[i].split(DELIMETER);
-    			final int start = row[0].indexOf('@');
+    			
+    			/*final int start = row[0].indexOf('@');
 				final int end = row[0].indexOf('@', start + 1);
 				final String time = row[0].substring(start + 1, end);
-				final long timeLong = Long.parseLong(time, 16);
-				
-				lastsiterequest = Math.max(timeLong/1000000, lastsiterequest) + 1; //to ensure we don't get sent the last record again..
+				final long timeLong = Long.parseLong(time, 16);*/
+    			
+    			
+    			final long timeLong = Util.convertTs(row[0]);
+    			
+				lastsiterequest = Math.max(timeLong, lastsiterequest) + 1; //to ensure we don't get sent the last record again..
     			
 				if (! (lastsite.equals(row[2]) && lastsrc.equals(row[1]))){
-    				sites.add(new Website(row[1], row[2], timeLong/1000000));
+    				sites.add(new Website(row[1], row[2], timeLong));
     				lastsite = row[2];
     				lastsrc  = row[1];
     			}
     		}
     	}	
 	}
-
+	
+	
 }

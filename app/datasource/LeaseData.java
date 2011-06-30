@@ -1,6 +1,7 @@
 package datasource;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import models.Website;
 
@@ -8,6 +9,7 @@ public class LeaseData {
 
 	private static final String DELIMETER = "\\<\\|\\>";
 	private static LeaseData sharedData = null;
+	private static Hashtable<String,String> mactoip;
 	private long last;
 	
 	private LeaseData(){
@@ -16,7 +18,7 @@ public class LeaseData {
 	
 	private void init(){
 		try{
-			
+			mactoip = new Hashtable<String, String>();
 		}catch(Exception e){
 			System.err.println("error connecting " + e.getMessage());
 		}
@@ -29,15 +31,42 @@ public class LeaseData {
 		return sharedData;
 	}
 	
-	public boolean arethesame(String macaddr, String IPAddr){
-		return true;
+	
+	public String getQuery(){
+		
+		
+		if (last == 0){
+			return String.format("SQL:select timestamp, macaddr, ipaddr, action from Leases WHERE action contains \"add\" ORDER BY timestamp asc");
+		}else{
+			final String s = String.format("@%016x@", last * 1000000);
+			return String.format("SQL:select timestamp, macaddr, ipaddr, action from Leases [since %s] WHERE action contains \"add\" ORDER BY timestamp asc", s);
+		}
 	}
 	
+	//public boolean arethesame(String macaddr, String IPAddr){
+	//	return true;
+	//}
+	
 	public String lookup(String macaddr){
-		return "10.2.0.1";
+		System.err.println("looking up " + macaddr);
+		return mactoip.get(macaddr.toLowerCase());
 	}
 	
 	public void parse(String data){
-	
+		String[] rows = data.split("\n");
+    	
+    	if (rows.length > 2){
+    		
+    		for (int i = 2; i < rows.length; i++){
+    			System.err.println(rows[i]);
+    			String row[] = rows[i].split(DELIMETER);
+    			last = Util.convertTs(row[0]) + 1;
+    			if (row[3].equals("add")){
+    				System.out.println("putting " + row[1].toLowerCase() + "  " + row[2]);
+    				mactoip.put(row[1].toLowerCase(), row[2]);
+    			}
+    			
+    		}
+    	}	
 	}
 }
