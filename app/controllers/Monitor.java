@@ -17,7 +17,7 @@ public class Monitor extends Controller {
 
 	
     public static void web(String device) {
-    	System.err.println("in monitor..." + device);
+    	
     	renderJSON(MonitorHandler.sharedHandler().getLatestSites(device));
     }
 

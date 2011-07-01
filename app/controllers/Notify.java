@@ -27,6 +27,11 @@ public class Notify extends Controller{
 	private static final String APPLICATION_SECRET  = "TP6b3UBaTYS6MqdwJKz97g";
 	private static final String URBANAIRSHIP_URL = "https://go.urbanairship.com/api/push/";
 		
+	public static void policyclient(String policyid){
+		System.err.println("notifying policyclient..." + policyid);
+		sendUAMessage(String.format("\"aps\": {\"alert\": \"Policy Fired!\", \"policyid\":\"%s\"}",policyid));
+	}
+	
 	public static void register(){
 
 	}
@@ -36,8 +41,24 @@ public class Notify extends Controller{
 	}
 
 	public static void push(){
-		System.err.println("in push!!!!");
+	
+		
+	}
 
+	private static String getB64Auth(){
+		return "Basic " + Base64.encode((APPLICATION_KEY + ":" + APPLICATION_SECRET).getBytes());
+
+	}
+
+	public static void phone(){
+
+	}
+
+	public static void beep(){
+
+	}
+	
+	private static void sendUAMessage(String message){
 		try{
 			HttpClient client = new DefaultHttpClient();
 
@@ -46,7 +67,7 @@ public class Notify extends Controller{
 			post.setHeader("Authorization", getB64Auth());
 			post.setHeader(new BasicHeader("Content-Type", "application/json"));
 
-			String json = "{\"device_tokens\": [\"85e565ad0c6de5cecfc16da6a61a3d3135a98d0f0804ca450922cdfd3bbda08e\"], \"aps\": {\"alert\": \"Hello!\"}}";
+			String json = String.format("{\"device_tokens\": [\"85e565ad0c6de5cecfc16da6a61a3d3135a98d0f0804ca450922cdfd3bbda08e\"], %s}",message);
 
 			StringEntity s = new StringEntity(json);
 
@@ -61,19 +82,6 @@ public class Notify extends Controller{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-	}
-
-	private static String getB64Auth(){
-		return "Basic " + Base64.encode((APPLICATION_KEY + ":" + APPLICATION_SECRET).getBytes());
-
-	}
-
-	public static void phone(){
-
-	}
-
-	public static void beep(){
-
 	}
 
 }

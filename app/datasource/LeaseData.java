@@ -50,6 +50,7 @@ public class LeaseData {
 	public String lookup(String macaddr){
 		System.err.println("looking up " + macaddr);
 		return mactoip.get(macaddr.toLowerCase());
+		//return "10.2.2.1";
 	}
 	
 	public void parse(String data){

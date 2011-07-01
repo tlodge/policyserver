@@ -13,6 +13,8 @@ GET 	/monitor/bandwidth/{device}				Monitor.bandwidth
 
 GET 	/monitor/activity/{device}				Monitor.activity
 
+GET		/notify/policyclient/{policyid}			Notify.policyclient
+
 POST 	/block/{device}							Block.block
 				
 POST	/policy/save/							Policy.save

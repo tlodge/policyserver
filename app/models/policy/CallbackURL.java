@@ -11,6 +11,33 @@ public class CallbackURL {
 	
 	Runnable r;
 	
+	
+	public CallbackURL(String strurl){
+		final String callbackurl = strurl;
+		
+		r = new Runnable(){
+
+			@Override
+			public void run() {
+				try{
+					URL url= new URL(callbackurl);
+					System.err.println("calling url " + url.toString());
+					URLConnection c = url.openConnection();
+			        BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
+			        String inputLine;
+
+			        while ((inputLine = in.readLine()) != null) 
+			            System.out.println(inputLine);
+			        in.close();
+
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+			
+		};
+	}
+	
 	public CallbackURL(Policy p){
 	
 			if (p.action.type.equals("notify")){

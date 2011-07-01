@@ -25,7 +25,7 @@ public class PolicyManager {
 	
 	public Hashtable<String, Query> activePolicies; 
 	
-	private static int policyindex = 0;
+	private static int policyindex = 2;
 	
 	private PolicyManager(){
 		init();
@@ -82,6 +82,7 @@ public class PolicyManager {
 		if (p.identity != null){
 			return p.identity;
 		}
-		return String.valueOf(policyindex++);
+		p.identity = String.valueOf(policyindex++);
+		return p.identity;
 	}
 }

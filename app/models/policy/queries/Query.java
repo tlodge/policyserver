@@ -14,8 +14,10 @@ public abstract class Query {
 	protected DataProcessor processor;
 	
 	public Query(Policy p){
+		System.err.println("Registering policy id " + p.identity);
 		this.policyid = p.identity;
 		callbackurls = new ArrayList<CallbackURL>();
+		callbackurls.add(new CallbackURL(String.format("http://localhost:9000/notify/policyclient/%s",p.identity)));
 	}
 	
 	public abstract void process (String data);

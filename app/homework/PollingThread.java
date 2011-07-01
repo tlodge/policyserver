@@ -28,12 +28,12 @@ public class PollingThread extends Thread
 
 	private final int TIME_DELTA = 5000;
 	private final JavaSRPC rpc = new JavaSRPC();
-	
-	
+
+
 	private void init(){
-	
+
 	}
-	
+
 	@Override
 	public void run()
 	{
@@ -62,22 +62,21 @@ public class PollingThread extends Thread
 					try
 					{
 						updateLeases();
-						
+
 						for (Query q : PolicyManager.sharedManager().activePolicies.values()){
 							String query = q.toString();
+
 							
-							System.err.println(query);
-							
-							try {
-								q.process(rpc.call(query));
-							} catch (IOException e) {
-								e.printStackTrace();
+							if (q!=null){
+								
+								try {
+									System.err.println("query = " + query);
+									q.process(rpc.call(query));
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
 							}
 						}
-						
-						
-						//pollURLTable();
-						//ConditionHandler.sharedHandler().handleData(ConditionHandler.TableType.URL);
 					}
 					catch (final Exception e)
 					{
@@ -112,12 +111,12 @@ public class PollingThread extends Thread
 		String urlQuery = LeaseData.sharedData().getQuery();
 		LeaseData.sharedData().parse(rpc.call(urlQuery));
 	}
-	
+
 	/*
 	private void pollURLTable() throws Exception{
 		String urlQuery;
 		long last = URLData.sharedData().getLatestTs();
-		
+
 		if (last > 0)
 		{
 			final String s = String.format("@%016x@", last * 1000000);
