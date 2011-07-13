@@ -1,5 +1,6 @@
 package models.policy.queries;
 
+import policy.PolicyManager;
 import models.policy.CallbackURL;
 import models.policy.Policy;
 import datasource.LeaseData;
@@ -22,11 +23,12 @@ public class URLQuery extends Query{
 		processor.process(data);
 		
 		if (processor.triggered()){
-			processor.reset();
+			
 			
 			for (CallbackURL c : callbackurls)
 				c.call();
 			
+			PolicyManager.sharedManager().remove(policyid);
 		}		
 	}
 

@@ -30,7 +30,7 @@ public class MonitorHandler {
 	ArrayList<Website> sites = new ArrayList<Website>();
 	private long lastsiterequest = 0L;
 	private long lastbwrequest = 0L;
-	private long lastactivityrequest = 0L;
+	private long lastactivity = 0L;
 	
 	private MonitorHandler(){
 		init();
@@ -110,7 +110,7 @@ public class MonitorHandler {
 		return sites;
 	}
 	
-	public long getLatestActivity(String device){
+	public Long[] getLatestActivity(String device){
 		//return 0 if no activity
 		//return timestamp if there is activity....
 		String query = null;
@@ -118,8 +118,8 @@ public class MonitorHandler {
 		try {
 			String ipaddr = LeaseData.sharedData().lookup(device);
 			
-			if (lastactivityrequest > 0){
-				final String s = String.format("@%016x@", lastactivityrequest * 1000000);
+			if (lastactivity > 0){
+				final String s = String.format("@%016x@", lastactivity * 1000000);
 				query = String.format("SQL:select timestamp, saddr from Flows [since %s] where saddr contains \"%s\"",s,ipaddr);		
 			}else{
 				query = String.format("SQL:select timestamp, saddr from Flows [range 5 seconds] where saddr contains \"%s\"", ipaddr);
@@ -134,19 +134,22 @@ public class MonitorHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return 0L;
+		return null;
 	}
 	
-	private long processactivity(String data, String ipaddr){
-		lastactivityrequest = 0L;
+	private Long[] processactivity(String data, String ipaddr){
+		lastactivity = 0L;
+		
 		String[] rows = data.split("\n");
+		
 		if (rows.length > 2){
-			System.err.println("activity - got " + rows[rows.length-1]);
 			String row[] = rows[rows.length-1].split(DELIMETER);
-			lastactivityrequest = Util.convertTs(row[0]) + 1;
-			return lastactivityrequest;
+			lastactivity = Util.convertTs(row[0]) + 1;
 		}
-		return 0L;
+		//System.currentTimeMillis();
+		
+		return new Long[]{System.currentTimeMillis(),lastactivity};
+		//return 0L;
 	}
 	
 	private long processbwidth(String data, String ipaddr){

@@ -27,7 +27,8 @@ public class Monitor extends Controller {
     }
     
     public static void activity(String device){
-    	renderJSON(MonitorHandler.sharedHandler().getLatestActivity(device));
+    	Long[] l = MonitorHandler.sharedHandler().getLatestActivity(device);  
+    	renderJSON(l);
     }
 }
 

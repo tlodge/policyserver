@@ -46,6 +46,11 @@ public class PolicyManager {
 		return sharedManager;
 	}
 	
+	public void remove(String policyid){
+		System.err.println("removed policy " + policyid);
+		activePolicies.remove(policyid);
+	}
+	
 	public String save (String policy){
 		boolean success  = true;
 		
