@@ -20,6 +20,7 @@ public class URLQuery extends Query{
 	@Override
 	public void process (String data){
 		
+		
 		processor.process(data);
 		
 		if (processor.triggered()){
@@ -43,6 +44,13 @@ public class URLQuery extends Query{
 			final String s = String.format("@%016x@", processor.last * 1000000);
 			thequery = query.replace("[timeframe]", "[since " + s + "]");
 		}
-		return thequery.replace("[deviceaddr]", String.format("\"%s\"", LeaseData.sharedData().lookup(subject)));
+		
+		String ipaddr = null;
+		
+		if ( (ipaddr = LeaseData.sharedData().lookup(subject)) != null){
+			return thequery.replace("[deviceaddr]", String.format("\"%s\"", ipaddr));
+		}
+		
+		return null;
 	}
 }

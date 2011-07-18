@@ -1,12 +1,13 @@
 package policy;
 
 import homework.JavaSRPC;
-import homework.SRPCManager;
+import homework.PollingThread;
 import homework.handler.MonitorHandler;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import play.Logger;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
@@ -24,6 +25,7 @@ public class PolicyManager {
 	private static PolicyManager sharedManager = null;
 	
 	public Hashtable<String, Query> activePolicies; 
+
 	
 	private static int policyindex = 2;
 	
@@ -35,7 +37,7 @@ public class PolicyManager {
 		try{
 			activePolicies = new Hashtable<String, Query>();
 		}catch(Exception e){
-			System.err.println("error creating policy manager " + e.getMessage());
+			Logger.info(e, "error creating policy manager ");
 		}
 	}
 	
@@ -47,8 +49,10 @@ public class PolicyManager {
 	}
 	
 	public void remove(String policyid){
-		System.err.println("removed policy " + policyid);
+	
+		
 		activePolicies.remove(policyid);
+		Logger.info("removed policy %s", policyid);
 	}
 	
 	public String save (String policy){

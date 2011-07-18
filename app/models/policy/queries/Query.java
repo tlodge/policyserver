@@ -1,9 +1,13 @@
 package models.policy.queries;
 
+import homework.PollingThread;
+
 import java.util.ArrayList;
+
 
 import models.policy.CallbackURL;
 import models.policy.Policy;
+import play.Logger;
 
 public abstract class Query {
 
@@ -12,12 +16,13 @@ public abstract class Query {
 	protected String query = null;
 	protected String subject;
 	protected DataProcessor processor;
+
 	
 	public Query(Policy p){
-		System.err.println("Registering policy id " + p.identity);
+		Logger.info("Registering policy id " + p.identity);
 		this.policyid = p.identity;
 		callbackurls = new ArrayList<CallbackURL>();
-		callbackurls.add(new CallbackURL(String.format("http://localhost:9000/notify/policyclient/%s",p.identity)));
+		callbackurls.add(new CallbackURL(String.format("http://localhost:8080/policyserver/notify/policyclient/%s",p.identity)));
 	}
 	
 	public abstract void process (String data);

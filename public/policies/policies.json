@@ -1,0 +1,49 @@
+{
+    "policies":{
+                
+               "1":{
+                    
+                    "subject":{
+                            "owner":"katie",
+                            "device":"0000cccc"
+                    },
+                
+                    "condition":{
+                            "type":"timed",
+                            
+                            "arguments":{
+                                        "from":"12:30", 
+                                        "to":"13:00"
+                            }
+                    },
+
+                    "action":{
+                            "type":"block",
+                            "subject":"00:1f:f3:bc:b2:57",
+                            "arguments":["dad"]
+                    }
+                }                
+    },
+
+    "default":{
+
+            "subject":{
+                "owner":"katie",
+                "device":"0000cccc"
+            },
+
+            "condition":{
+                "type":"timed",
+                "arguments":{
+                    "from":"12:00", 
+                    "to":"13:00"
+                }
+            },
+
+            "action":{
+                "type":"block",
+                "subject":"00:1f:f3:bc:b2:57",
+                "arguments":["dad"]
+            }
+    }
+}

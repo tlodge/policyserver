@@ -1,0 +1,328 @@
+{
+    "catalogue": {
+    
+        "navigation":{
+    
+            "subjects":{
+                        "dad":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57"],
+                        "katie":["0000cccc"],   
+                        "mum":["0000dddd"],
+                        "john":["0000eeee"],
+                        "everyone":["0000ffff"]
+            },
+
+            "conditions":{
+                        
+                "timed":{
+                        "arguments":{
+                            "from":"13:00",
+                            "to":"15:00"
+                        }
+                },
+    
+                "bandwidth":{
+                        "arguments":{
+                            "percentage":80.5
+                        }
+                },
+
+                "visiting":{
+                        "arguments":{
+                            "sites":["news.bbc.co.uk", "www.google.co.uk"]
+                        }
+                }
+            },
+
+            "actions":{
+
+                    "block":{
+                        "subjects":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57","0000cccc","0000dddd","0000eeee", "0000ffff"],
+                        "arguments":{
+                                "18:E7:F4:79:52:B2":["dad"],
+                                "00:1f:f3:bc:b2:57":["dad"],
+                                "0000cccc":["katie"],   
+                                "0000dddd":["mum"],
+                                "0000eeee":["john"],
+                                "0000ffff":["everyone"]
+                        }
+                    }, 
+                        
+                    "notify":{
+                        "subjects":["dad","mum","katie","john"],  
+                        "arguments": {
+                                "dad": ["tweet","phone","mail","sound"],
+                                "katie": ["tweet","phone","mail","sound"],           
+                                "mum": ["tweet","phone","mail","sound"],
+                                "john": ["tweet","phone","mail","sound"]
+                        }
+                    }
+            },
+
+            "monitors":["bandwidth","time","visits","type"],
+
+            "mappings":{
+
+                "conditiontomonitor":{
+                    "surfing":"type",
+                    "downloading":"type",
+                    "gaming":"type",
+                    "streaming":"type",
+                    "timed":"time",
+                    "bandwidth":"bandwidth",
+                    "visiting":"visits"
+                }
+            }
+        },
+        
+        
+
+        "metadata":{
+            "devices":{
+                "18:E7:F4:79:52:B2":{
+                    "name": "dad's itouch"
+                },
+                "00:1f:f3:bc:b2:57":{
+                    "name": "dad's macair"
+                },
+                "0000cccc":{
+                    "name": "katie's desktop"   
+                },
+                    "0000dddd":{
+                    "name": "mum's computer"
+                },
+                    "0000eeee":{
+                    "name": "john's computer"
+                },
+                    "0000ffff":{
+                    "name": "lounge computer"
+                }
+            }
+        },
+
+        "controllers":{
+
+            "conditions":{
+                "surfing":"ConditionTypeViewController",
+                "downloading":"ConditionTypeViewController",
+                "gaming":"ConditionTypeViewController",
+                "streaming":"ConditionTypeViewController",
+                "timed":"ConditionTimeViewController",
+                "bandwidth":"ConditionBandwidthViewController",
+                "visiting":"ConditionVisitingViewController"
+            },
+
+            "actions":{
+                "notify":"ActionNotifyViewController",
+                "block":"ActionBlockViewController"
+            },
+
+            "results":{
+                "surfing":"ResultTypeViewController",
+                "downloading":"ResultTypeViewController",
+                "gaming":"ResultTypeViewController",
+                "streaming":"ResultTypeViewController",
+                "timed":"ResultTimeViewController",
+                "bandwidth":"ResultBandwidthViewController",
+                "visiting":"ResultVisitsViewController"
+            }
+        },
+
+
+        "images":{
+        
+            "dad":
+                {
+                    "main":"dad.png",
+                    "block":{
+                            "action": "blockdad.png"
+                    },
+                    "notify":{
+                            "action":"notifydad.png",
+                            "result":"dadwaiting.png",
+                            "fired":"dadtold.png"
+                    }
+                },
+                
+            "katie":
+                {
+                    "main":"katie.png",
+                    "block":{
+                            "action":"blockkatie.png"
+                    },
+                    "notify":{
+                            "action":"notifykatie.png",
+                            "result":"katiewaiting.png",
+                            "fired":"katietold.png"
+                    }
+                },
+            "mum":
+                {
+                    "main":"mum.png",
+                    "block":{
+                            "action":"blockmum.png"
+                    },
+                    "notify":{
+                            "action":"notifymum.png",
+                            "result":"mumwaiting.png",
+                            "fired":"mumtold.png"
+                    }
+                },
+            "john":
+                {
+                    "main":"john.png",
+                    "block":{   
+                        "action":"blockjohn.png"
+                    },
+                    "notify":{
+                            "action":"notifyjohn.png",
+                            "result":"johnwaiting.png",
+                            "fired":"johntold.png"
+                    }
+                },
+            "everyone":
+                {
+                    "main":"everyone.png",
+                    "block":{
+                            "action":"blockeveryone.png"
+                    },
+                    "notify":{
+                            "action":"notifyeveryone.png",
+                            "result":"everyonewaiting.png",
+                            "fired":"everyonetold.png"
+                    }
+                },
+            "18:E7:F4:79:52:B2":
+                {
+                    "main":"condphone.png",
+                    "block":{
+                            "action":"asphone.png",
+                            "result":"phoneunblocked.png",
+                            "fired":"phoneblocked.png"
+                    }
+                },
+            "00:1f:f3:bc:b2:57":
+                {
+                    "main":"condlaptop",
+                    "block":{
+                            "action":"aslaptop.png",
+                            "result":"laptopunblocked.png",
+                            "fired":"laptopblocked.png"
+                    }
+                },
+            "0000cccc":
+                {
+                    "main":"conddesktop.png",
+                    "block":{
+                            "action":"asdesktop.png",
+                            "result":"desktopunblocked.png",
+                            "fired":"desktopblocked.png"
+                    }
+                },
+            "0000dddd":
+                {
+                    "main":"condcomputer.png",
+                    "block":{
+                            "action":"ascomputer.png",
+                            "result":"computerunblocked.png",
+                            "fired":"computerblocked.png"
+                    }
+                },
+            "0000eeee":
+                {
+                    "main":"condcomputer.png",
+                    "block":{
+                            "action":"ascomputer.png",
+                            "result":"computerunblocked.png",
+                            "fired":"computerblocked.png"
+                    }
+                },
+            "0000ffff":
+                {
+                    "main":"condcomputer.png",
+                    "block":{
+                        "action":"ascomputer.png",
+                        "result":"computerunblocked.png",
+                        "fired":"computerblocked.png"
+                    }
+                },
+
+            "tweet":
+                {
+                    "notify":{
+                        "action":"notifybytweet.png"
+                    }
+                },
+
+            "phone":
+                {
+                    "notify":{
+                        "action":"notifybyphone.png"
+                    }
+                },
+            "mail":
+                {
+                    "notify":{
+                        "action":"notifybymail.png"
+                    }
+                },
+            "sound":
+                {
+                    "notify":{
+                        "action":"notifybymail.png"
+                    }
+                },
+            "notify":
+                {
+                    "tweet":"notifybytweet.png",
+                    "phone":"notifybyphone.png",
+                    "mail":"notifybymail.png",
+                    "sound":"notifybysound.png"
+                },
+
+            "surfing":
+                {
+                    "main":"surfing.png",
+                    "result":"resulttype.png"
+                },
+
+            "downloading":
+                {
+                    "main":"downloading.png",
+                    "result":"resulttype.png"
+                },
+
+            "gaming":
+                {
+                    "main":"gaming.png",
+                    "result":"resulttype.png"
+                },
+
+            "streaming":
+                {
+                    "main":"streaming.png",
+                    "result":"resulttype.png"
+                },
+
+            "timed":
+                {
+                    "main":"timed.png",
+                    "result":"resulttime.png"
+                },
+            
+            "bandwidth":
+                {
+                    "main":"bandwidth.png",
+                    "result":"resultbandwidth.png"      
+                },
+            
+            "visiting":
+                {
+                    "main":"visiting.png",
+                    "result":"resultvisits.png"
+                }
+        }
+    }
+}
+                
+            
+        

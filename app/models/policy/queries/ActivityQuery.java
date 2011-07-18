@@ -18,7 +18,6 @@ public class ActivityQuery extends Query {
 		String from = (String) p.condition.arguments.get("from");
 		String to = (String) p.condition.arguments.get("to");
 		subject = p.subject;
-		System.err.println("from is " + from + " to is " + to);
 		processor = new ActivityDataProcessor(from,to,LeaseData.sharedData().lookup(p.subject));
 		callbackurls.add(new CallbackURL(p));
 		
@@ -51,7 +50,13 @@ public class ActivityQuery extends Query {
 			final String s = String.format("@%016x@", processor.last * 1000000);
 			thequery = query.replace("[timeframe]", "[since " + s + "]");
 		}
-		return thequery.replace("[deviceaddr]", String.format("\"%s\"", LeaseData.sharedData().lookup(subject)));
+		String ipaddr = null;
+		
+		if ( (ipaddr = LeaseData.sharedData().lookup(subject)) != null){
+			return thequery.replace("[deviceaddr]", String.format("\"%s\"", ipaddr));
+		}
+		
+		return null;
 	}
 
 }

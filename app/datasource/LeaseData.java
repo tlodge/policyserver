@@ -2,7 +2,7 @@ package datasource;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-
+import play.Logger;
 import models.Website;
 
 public class LeaseData {
@@ -17,11 +17,9 @@ public class LeaseData {
 	}
 	
 	private void init(){
-		try{
-			mactoip = new Hashtable<String, String>();
-		}catch(Exception e){
-			System.err.println("error connecting " + e.getMessage());
-		}
+		
+		mactoip = new Hashtable<String, String>();
+		
 	}
 	
 	public static LeaseData sharedData(){
@@ -48,12 +46,15 @@ public class LeaseData {
 	//}
 	
 	public String lookup(String macaddr){
-		System.err.println("looking up " + macaddr);
+		
 		return mactoip.get(macaddr.toLowerCase());
 		//return "10.2.2.1";
 	}
 	
 	public void parse(String data){
+		if (data == null)
+			return;
+		
 		String[] rows = data.split("\n");
     	
     	if (rows.length > 2){
@@ -63,7 +64,7 @@ public class LeaseData {
     			String row[] = rows[i].split(DELIMETER);
     			last = Util.convertTs(row[0]) + 1;
     			if (row[3].equals("add")){
-    				System.out.println("putting " + row[1].toLowerCase() + "  " + row[2]);
+    				Logger.info("adding lease " + row[1].toLowerCase() + "  " + row[2]);
     				mactoip.put(row[1].toLowerCase(), row[2]);
     			}
     			

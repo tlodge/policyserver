@@ -1,6 +1,9 @@
 package models.policy.queries;
 
+import homework.PollingThread;
+
 import java.util.HashSet;
+import play.Logger;
 
 import datasource.Util;
 
@@ -9,6 +12,7 @@ import models.Website;
 public class URLDataProcessor extends DataProcessor{
 
 	public HashSet<String> sites;
+
 	
 	public URLDataProcessor(String[] mysites){
 		sites = new HashSet<String>();
@@ -20,12 +24,17 @@ public class URLDataProcessor extends DataProcessor{
 	@Override
 	public void process(String data) {
 		
+		if (data == null)
+			return;
+		
+		
 		String[] rows = data.split("\n");
     	
 		last = 0;
     	
     	if (rows.length > 2){
     		for (int i = 2; i < rows.length; i++){
+    			
     			String row[] = rows[i].split(DELIMETER);
     			final long timeLong = Util.convertTs(row[0]) + 1;
     					
@@ -33,7 +42,7 @@ public class URLDataProcessor extends DataProcessor{
     			
 				if (sites.contains(row[2])){
 					if (!triggered){
-						System.err.println("triggering on " + row[2]);
+						Logger.info("triggering on %s", row[2]);
     					triggered = true;
 					}
     			}		

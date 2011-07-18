@@ -1,17 +1,21 @@
 package models.policy;
 
+import homework.PollingThread;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import play.Logger;
 
 public class CallbackURL {
 	
 	Runnable r;
 	
-	
+	//private static final Logger logger = Logger.getLogger(CallbackURL.class.getName());
+
 	public CallbackURL(String strurl){
 		final String callbackurl = strurl;
 		
@@ -21,13 +25,13 @@ public class CallbackURL {
 			public void run() {
 				try{
 					URL url= new URL(callbackurl);
-					System.err.println("calling url " + url.toString());
+					Logger.info("calling url %s", url.toString());
 					URLConnection c = url.openConnection();
 			        BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
 			        String inputLine;
 
 			        while ((inputLine = in.readLine()) != null) 
-			            System.out.println(inputLine);
+			           Logger.info(inputLine);
 			        in.close();
 
 				}catch(Exception e){
@@ -47,14 +51,14 @@ public class CallbackURL {
 					@Override
 					public void run() {
 						try{
-							URL url= new URL("http://localhost:9000/notify/push");
-							System.err.println("calling url " + url.toString());
+							URL url= new URL("http://localhost:8080/policyserver/notify/push");
+							Logger.info("calling url %s", url.toString());
 							URLConnection c = url.openConnection();
 					        BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
 					        String inputLine;
 
 					        while ((inputLine = in.readLine()) != null) 
-					            System.out.println(inputLine);
+					        	Logger.info(inputLine);
 					        in.close();
 
 						}catch(Exception e){
@@ -72,8 +76,8 @@ public class CallbackURL {
 					public void run() {
 						try {
 							
-							URL url= new URL(String.format("http://localhost:9000/block/%s",subject));
-							System.err.println("calling url " + url.toString());
+							URL url= new URL(String.format("http://localhost:8080/policyserver/block/%s",subject));
+							Logger.info("calling url %s", url.toString());
 							URLConnection c = url.openConnection();
 							c.setDoOutput(true);
 							OutputStreamWriter out = new OutputStreamWriter(c.getOutputStream());
@@ -82,7 +86,7 @@ public class CallbackURL {
 							BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
 							String inputLine;
 							while((inputLine = in.readLine()) != null){
-								System.out.println(inputLine);
+								Logger.info(inputLine);
 							}
 							in.close();
 						} catch (Exception e) {

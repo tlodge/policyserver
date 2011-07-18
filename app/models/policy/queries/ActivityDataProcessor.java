@@ -1,13 +1,18 @@
 package models.policy.queries;
 
+import homework.PollingThread;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import datasource.Util;
+import play.Logger;
 
 public class ActivityDataProcessor extends DataProcessor {
+
+	//private static final Logger logger = Logger.getLogger(ActivityDataProcessor.class.getName());
 
 	static SimpleDateFormat df = new SimpleDateFormat("HH:mm");
 	static Calendar calendar = GregorianCalendar.getInstance();
@@ -18,7 +23,6 @@ public class ActivityDataProcessor extends DataProcessor {
 		try{
 			Date from = df.parse(f);
 			Date to = df.parse(t);
-			System.err.println("SET FROM TO " + f + " and set TO To " + t);
 			
 			calendar.setTime(from);
 			int fromhour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -38,6 +42,8 @@ public class ActivityDataProcessor extends DataProcessor {
 	@Override
 	public void process(String data) {
 		
+		if (data == null)
+			return;
 		String[] rows = data.split("\n");
 		last = 0;
 		
@@ -50,7 +56,7 @@ public class ActivityDataProcessor extends DataProcessor {
     			
 				if (withinTimeRange(timeLong)){
 					if (!triggered){
-						System.err.println("triggering!");
+						Logger.info("activity policy: triggering");
     					triggered = true;
 					}
     			}		
@@ -61,7 +67,6 @@ public class ActivityDataProcessor extends DataProcessor {
 
 	
 	public boolean withinTimeRange(long ts){
-		//long secondselapsed = (ts/1000) % (24  * 3600);
 		calendar.setTime(new Date(ts));
 		int tohour = calendar.get(Calendar.HOUR_OF_DAY);
 		int tominute = calendar.get(Calendar.MINUTE);
@@ -69,17 +74,12 @@ public class ActivityDataProcessor extends DataProcessor {
 		
 		long routersecondsfrommidnight = (tohour * 3600) + (tominute * 60) + toseconds;
 		
-		//System.err.println("FLOW ROUTER DATE" + new Date(ts).toString());
-		//System.err.println("TimeStamp of this machine..")
+		
 		if (tos > froms){
-			//System.err.println("toseconds (" + tos + ") is greater than from seconds (" + froms + ") and rsfm is " + routersecondsfrommidnight);
 			boolean toreturn = (routersecondsfrommidnight >= froms && routersecondsfrommidnight <= tos);
-			//System.err.println("returning " + toreturn);
 			return toreturn;
 		}else{
-			//System.err.println("toseconds (" + tos + ") is LESS than from seconds (" + froms + ") and rsfm is " + routersecondsfrommidnight);
 			boolean toreturn = !(routersecondsfrommidnight > tos && routersecondsfrommidnight < froms);
-			//System.err.println("returning " + toreturn);
 			return toreturn;
 		}
 	}

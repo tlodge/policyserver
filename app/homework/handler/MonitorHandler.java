@@ -6,8 +6,7 @@ import datasource.Util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import play.Logger;
 
 import datasource.LeaseData;
 
@@ -17,21 +16,22 @@ import models.policy.Policy;
 
 public class MonitorHandler {
 
+
 	protected static final String DELIMETER = "\\<\\|\\>";
-	
+
 	private static MonitorHandler sharedHandler = null;
 
-	public static final String hwdbHost = "10.2.0.2";
+	public static final String hwdbHost = "localhost";// "10.2.0.2";
 
-	private static final Logger logger = Logger.getLogger(MonitorHandler.class.getName());
+	//private static final Logger logger = Logger.getLogger(MonitorHandler.class.getName());
 
 	private final JavaSRPC rpc = new JavaSRPC();
-	
+
 	ArrayList<Website> sites = new ArrayList<Website>();
 	private long lastsiterequest = 0L;
 	private long lastbwrequest = 0L;
 	private long lastactivity = 0L;
-	
+
 	private MonitorHandler(){
 		init();
 	}
@@ -41,16 +41,16 @@ public class MonitorHandler {
 
 			try
 			{
-				System.err.println("connectiong to hw dbase....");
+				Logger.info("connectiong to hw dbase....");
 				rpc.connect(InetAddress.getByName(hwdbHost), 987);
-				System.err.println("scuccessfully connected to db...");
+				Logger.info("monitor: successfully connected to db...");
 			}
 			catch (final Exception e)
 			{
-				logger.log(Level.SEVERE, e.getMessage(), e);
+				Logger.error(e, "Monitor handler init");
 			}
 		}catch(Exception e){
-			System.err.println("error connecting " + e.getMessage());
+			Logger.error(e, "error connecting ");
 		}
 	}
 
@@ -64,145 +64,154 @@ public class MonitorHandler {
 
 	public Long getLatestBandwidth(String device){
 		String query = null;
-		
-		try {
-			String ipaddr = LeaseData.sharedData().lookup(device);
-			
-			if (lastbwrequest > 0){
-				final String s = String.format("@%016x@", lastbwrequest * 1000000);
-				query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [since %s] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr",s,ipaddr, ipaddr);		
-			}else{
-				query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [range 5 seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", ipaddr, ipaddr);
 
+		try {
+
+			String ipaddr = LeaseData.sharedData().lookup(device);
+
+			if (ipaddr != null){
+				if (lastbwrequest > 0){
+					final String s = String.format("@%016x@", lastbwrequest * 1000000);
+					query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [since %s] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr",s,ipaddr, ipaddr);		
+				}else{
+					query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [range 5 seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", ipaddr, ipaddr);
+
+				}
+				return processbwidth(rpc.call(query), ipaddr);
+			}else{
+				Logger.info("no lease record for device %s", device);
 			}
-			
-			System.err.println(query);
-			
-			return processbwidth(rpc.call(query), ipaddr);
-			
+
 		} catch (IOException e) {
+			Logger.error(e, "error getting bandwidth");
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return 0L;
 	}
-	
+
 	public ArrayList<Website> getLatestSites(String device){
-		System.err.println("getting latest siste...");
 		sites.clear();
 		String ipaddr = LeaseData.sharedData().lookup(device);
-		
-		try {
-			if (lastsiterequest > 0){
-				final String s = String.format("@%016x@", lastsiterequest * 1000000);
-				String query = String.format("SQL:select timestamp, saddr, hst from Urls [ since %s ] where saddr contains \"%s\" order by hst asc", s, ipaddr);
-				processsites(rpc.call(query));
-				
-			}else{
-				String query = String.format("SQL:select timestamp, saddr, hst from Urls [range 5 seconds] where saddr contains \"%s\" order by hst asc", ipaddr);
-				processsites(rpc.call(query));
+
+		if (ipaddr != null){
+			try {
+				if (lastsiterequest > 0){
+					final String s = String.format("@%016x@", lastsiterequest * 1000000);
+					String query = String.format("SQL:select timestamp, saddr, hst from Urls [ since %s ] where saddr contains \"%s\" order by hst asc", s, ipaddr);
+					processsites(rpc.call(query));
+
+				}else{
+					String query = String.format("SQL:select timestamp, saddr, hst from Urls [range 5 seconds] where saddr contains \"%s\" order by hst asc", ipaddr);
+					processsites(rpc.call(query));
+				}
+
+			} catch (IOException e) {
+				Logger.error(e, "error getting latest sites");
+				e.printStackTrace();
 			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}else{
+			Logger.info("no lease record for device %s", device);
 		}
 		return sites;
 	}
-	
+
 	public Long[] getLatestActivity(String device){
-		//return 0 if no activity
-		//return timestamp if there is activity....
+
 		String query = null;
-		
+
 		try {
 			String ipaddr = LeaseData.sharedData().lookup(device);
-			
-			if (lastactivity > 0){
-				final String s = String.format("@%016x@", lastactivity * 1000000);
-				query = String.format("SQL:select timestamp, saddr from Flows [since %s] where saddr contains \"%s\"",s,ipaddr);		
-			}else{
-				query = String.format("SQL:select timestamp, saddr from Flows [range 5 seconds] where saddr contains \"%s\"", ipaddr);
+			if (ipaddr != null){
+				if (lastactivity > 0){
+					final String s = String.format("@%016x@", lastactivity * 1000000);
+					query = String.format("SQL:select timestamp, saddr from Flows [since %s] where saddr contains \"%s\"",s,ipaddr);		
+				}else{
+					query = String.format("SQL:select timestamp, saddr from Flows [range 5 seconds] where saddr contains \"%s\"", ipaddr);
 
+				}
+
+				//System.err.println("qry = " + query);
+
+				return processactivity(rpc.call(query), ipaddr);
+			}else{
+				Logger.info("no lease record for device %s", device);
 			}
-			
-			System.err.println("qry = " + query);
-			
-			return processactivity(rpc.call(query), ipaddr);
-			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.error(e, "getting latest activity");
+
+			//e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	private Long[] processactivity(String data, String ipaddr){
+
+
 		lastactivity = 0L;
-		
-		String[] rows = data.split("\n");
-		
-		if (rows.length > 2){
-			String row[] = rows[rows.length-1].split(DELIMETER);
-			lastactivity = Util.convertTs(row[0]) + 1;
+
+		if (data != null){
+			String[] rows = data.split("\n");
+
+			if (rows.length > 2){
+				String row[] = rows[rows.length-1].split(DELIMETER);
+				lastactivity = Util.convertTs(row[0]) + 1;
+			}
 		}
-		//System.currentTimeMillis();
-		
+
 		return new Long[]{System.currentTimeMillis(),lastactivity};
-		//return 0L;
 	}
-	
+
 	private long processbwidth(String data, String ipaddr){
-		String[] rows = data.split("\n");
-    	
-		
-		lastbwrequest = 0L;
-		
-    	if (rows.length > 2){
-    		
-    		for (int i = 2; i < rows.length; i++){
-    
-    			String row[] = rows[i].split(DELIMETER);
-    			if (row[2].equals(ipaddr)){
-    				System.err.println("bwidth - got " + row[1]);
-    				lastbwrequest = Util.convertTs(row[0]) + 1;
-    				return Long.valueOf(row[1]);
-    			}
-    		}
-    	}	
-    	
-    	return 0L;
+		if (data != null){
+
+			String[] rows = data.split("\n");
+
+
+			lastbwrequest = 0L;
+
+			if (rows.length > 2){
+
+				for (int i = 2; i < rows.length; i++){
+
+					String row[] = rows[i].split(DELIMETER);
+					if (row[2].equals(ipaddr)){
+						lastbwrequest = Util.convertTs(row[0]) + 1;
+						return Long.valueOf(row[1]);
+					}
+				}
+			}	
+		}
+		return 0L;
 	}
-	
+
 	private void processsites(String data){
+
+		if (data == null)
+			return;
+
 		String[] rows = data.split("\n");
-    	String lastsite = "";
-    	String lastsrc  = "";
-    	
-    	lastsiterequest = 0L;
-    	
-    	if (rows.length > 2){
-    		for (int i = 2; i < rows.length; i++){
-    			String row[] = rows[i].split(DELIMETER);
-    			
-    			/*final int start = row[0].indexOf('@');
-				final int end = row[0].indexOf('@', start + 1);
-				final String time = row[0].substring(start + 1, end);
-				final long timeLong = Long.parseLong(time, 16);*/
-    			
-    			
-    			final long timeLong = Util.convertTs(row[0]);
-    			
+		String lastsite = "";
+		String lastsrc  = "";
+
+		lastsiterequest = 0L;
+
+		if (rows.length > 2){
+			for (int i = 2; i < rows.length; i++){
+				String row[] = rows[i].split(DELIMETER);
+
+				final long timeLong = Util.convertTs(row[0]);
+
 				lastsiterequest = Math.max(timeLong, lastsiterequest) + 1; //to ensure we don't get sent the last record again..
-    			
+
 				if (! (lastsite.equals(row[2]) && lastsrc.equals(row[1]))){
-    				sites.add(new Website(row[1], row[2], timeLong));
-    				lastsite = row[2];
-    				lastsrc  = row[1];
-    			}
-    		}
-    	}	
+					sites.add(new Website(row[1], row[2], timeLong));
+					lastsite = row[2];
+					lastsrc  = row[1];
+				}
+			}
+		}	
 	}
-	
-	
+
+
 }

@@ -19,8 +19,6 @@ public class BandwidthQuery extends Query{
 		Object percent =  p.condition.arguments.get("percentage");
 		
 		float percentage = Float.valueOf(String.valueOf(percent));
-		
-		System.err.println("percentage is " + percentage);
 			
 		processor = new BandwidthDataProcessor((long) (percentage/100 * BANDWIDTH_LIMIT), LeaseData.sharedData().lookup(subject));
 			
@@ -46,8 +44,13 @@ public class BandwidthQuery extends Query{
 	public String toString() {
 		final String s = String.format("@%016x@", startTime * 1000000);
 		String thequery = query.replace("[timeframe]", "[since " + s + "]");
-		thequery = thequery.replace("[deviceaddr]", LeaseData.sharedData().lookup(subject));
-		return thequery;
+		String ipaddr = null;
+		
+		if ( (ipaddr = LeaseData.sharedData().lookup(subject)) != null){
+			thequery = thequery.replace("[deviceaddr]", ipaddr);
+			return thequery;
+		}
+		return null;
 	}
 
 }

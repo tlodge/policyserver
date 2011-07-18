@@ -1,5 +1,9 @@
 package models.policy.queries;
 
+import homework.PollingThread;
+
+import play.Logger;
+
 
 
 public class BandwidthDataProcessor extends DataProcessor {
@@ -7,8 +11,8 @@ public class BandwidthDataProcessor extends DataProcessor {
 	private long triggerbytes;
 	private String ipaddr;
 	
+
 	public BandwidthDataProcessor(long tb, String ipaddr){
-		System.err.println("setting trigger bytes to " + tb);
 		this.triggerbytes = tb;	
 		this.ipaddr = ipaddr;
 	}
@@ -26,7 +30,7 @@ public class BandwidthDataProcessor extends DataProcessor {
     			String row[] = rows[i].split(DELIMETER);
     			if (row[1].equals(ipaddr)){
     				if (Long.valueOf(row[0]) >= triggerbytes){
-    					System.err.println("bandwidth triggered....");
+    					Logger.info("bandwidth triggered");
     					triggered = true;
     				}
     			}

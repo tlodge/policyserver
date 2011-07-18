@@ -8,23 +8,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
+//import java.util.logging.Logger;
+import play.Logger;
 import policy.PolicyManager;
 
 import datasource.LeaseData;
 import datasource.URLData;
 
-import models.Callback;
 import models.policy.queries.Query;
 
 
 
 public class PollingThread extends Thread
 {
-	public static final String hwdbHost = "10.2.0.2";
+	public static final String hwdbHost = "localhost"; //"10.2.0.2";
 
-	private static final Logger logger = Logger.getLogger(PollingThread.class.getName());
+	//private static final Logger logger = Logger.getLogger(PollingThread.class.getName());
 
 	private final int TIME_DELTA = 5000;
 	private final JavaSRPC rpc = new JavaSRPC();
@@ -38,7 +37,7 @@ public class PollingThread extends Thread
 	public void run()
 	{
 		init();
-		System.err.println("starting to run polling thread...");
+		
 		try
 		{
 			while (true)
@@ -47,13 +46,13 @@ public class PollingThread extends Thread
 				{
 					try
 					{
-						System.err.println("connectiong to hw dbase....");
+						Logger.info("connecting to hw dbase....");
 						rpc.connect(InetAddress.getByName(hwdbHost), 987);
-						System.err.println("scuccessfully connected to db...");
+						Logger.info("successfully connected to hw dbase....");
 					}
 					catch (final Exception e)
 					{
-						logger.log(Level.SEVERE, e.getMessage(), e);
+						Logger.error("rpc connection error %s", e.getMessage());
 					}
 				}
 
@@ -70,8 +69,12 @@ public class PollingThread extends Thread
 							if (q!=null){
 								
 								try {
-									System.err.println("query = " + query);
-									q.process(rpc.call(query));
+									
+									String result = rpc.call(query);
+									
+									if (result != null)
+										q.process(result);
+									
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -80,7 +83,7 @@ public class PollingThread extends Thread
 					}
 					catch (final Exception e)
 					{
-						logger.log(Level.SEVERE, e.getMessage(), e);
+						Logger.error("rpc error %s", e.getMessage());
 					}
 
 					try
@@ -103,7 +106,7 @@ public class PollingThread extends Thread
 		}
 		catch (final Exception e)
 		{
-			logger.log(Level.SEVERE, e.getMessage(), e);
+			Logger.error("rpc error %s", e.getMessage());
 		}
 	}
 
@@ -111,23 +114,4 @@ public class PollingThread extends Thread
 		String urlQuery = LeaseData.sharedData().getQuery();
 		LeaseData.sharedData().parse(rpc.call(urlQuery));
 	}
-
-	/*
-	private void pollURLTable() throws Exception{
-		String urlQuery;
-		long last = URLData.sharedData().getLatestTs();
-
-		if (last > 0)
-		{
-			final String s = String.format("@%016x@", last * 1000000);
-			urlQuery = String.format("SQL:select timestamp, saddr, hst from Urls [ since %s ] order by hst asc", s);
-			System.err.println(urlQuery);
-		}
-		else
-		{
-			urlQuery = String.format("SQL:select timestamp, saddr, hst from Urls [range 5 seconds] order by hst asc");
-			System.err.println(urlQuery);
-		}
-		URLData.sharedData().parse(rpc.call(urlQuery));
-	}*/
 }
