@@ -19,5 +19,7 @@ POST 	/block/{device}							Block.block
 				
 POST	/policy/save/							Policy.save
 
+POST	/policy/delete/							Policy.delete
+
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

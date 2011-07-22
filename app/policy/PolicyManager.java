@@ -41,6 +41,7 @@ public class PolicyManager {
 		}
 	}
 	
+	
 	public static PolicyManager sharedManager(){
 		if (sharedManager == null){
 			sharedManager = new PolicyManager();
@@ -48,9 +49,13 @@ public class PolicyManager {
 		return sharedManager;
 	}
 	
-	public void remove(String policyid){
+	public boolean deleteAll(){
+		activePolicies.clear();
+		Logger.info("REMOVED ALL INSTALLED POLICIES");
+		return true;
+	}
 	
-		
+	public void remove(String policyid){
 		activePolicies.remove(policyid);
 		Logger.info("removed policy %s", policyid);
 	}

@@ -6,12 +6,15 @@ import datasource.Util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Date;
+
 import play.Logger;
 
 import datasource.LeaseData;
 
 import models.Website;
 import models.policy.Policy;
+import models.policy.queries.BandwidthQuery;
 
 
 public class MonitorHandler {
@@ -21,7 +24,7 @@ public class MonitorHandler {
 
 	private static MonitorHandler sharedHandler = null;
 
-	public static final String hwdbHost = "localhost";// "10.2.0.2";
+	public static final String hwdbHost =  "localhost";  //"10.2.0.2"; 
 
 	//private static final Logger logger = Logger.getLogger(MonitorHandler.class.getName());
 
@@ -62,22 +65,38 @@ public class MonitorHandler {
 		return sharedHandler;
 	}
 
-	public Long getLatestBandwidth(String device){
-		String query = null;
-
+	public Long[] getLatestBandwidth(String device){
+		
+		String sinceLastQuery = null;
+		String withinTimeRangeQuery = null;
+		
 		try {
 
 			String ipaddr = LeaseData.sharedData().lookup(device);
 
 			if (ipaddr != null){
 				if (lastbwrequest > 0){
-					final String s = String.format("@%016x@", lastbwrequest * 1000000);
-					query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [since %s] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr",s,ipaddr, ipaddr);		
+					Logger.info("last bw request is %s" , new Date(lastbwrequest).toString());
+					final String s 		 = String.format("@%016x@", lastbwrequest * 1000000);
+					sinceLastQuery 		 = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [since %s] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr",s,BandwidthQuery.subnet, BandwidthQuery.subnet);		
 				}else{
-					query = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [range 5 seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", ipaddr, ipaddr);
-
+					sinceLastQuery = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [range 5 seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", BandwidthQuery.subnet, BandwidthQuery.subnet);
 				}
-				return processbwidth(rpc.call(query), ipaddr);
+				withinTimeRangeQuery =  String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [range %d seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", BandwidthQuery.timeRange,  BandwidthQuery.subnet, BandwidthQuery.subnet);
+				
+				Logger.info("BW since last query %s", sinceLastQuery);
+				Logger.info("BW withinTimeRange query %s", withinTimeRangeQuery);
+				
+				
+				String tr = rpc.call(withinTimeRangeQuery);
+				String sl = rpc.call(sinceLastQuery);
+				
+				Long sinceLastBytes = processbandwidth(sl, ipaddr);
+				
+				Long timeRangeBytes = processbandwidth(tr, ipaddr);
+				
+				return new Long[]{sinceLastBytes, timeRangeBytes, BandwidthQuery.BANDWIDTH_LIMIT};
+			
 			}else{
 				Logger.info("no lease record for device %s", device);
 			}
@@ -87,7 +106,7 @@ public class MonitorHandler {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
 		}
-		return 0L;
+		return new Long[]{0L, 0L, BandwidthQuery.BANDWIDTH_LIMIT};
 	}
 
 	public ArrayList<Website> getLatestSites(String device){
@@ -142,7 +161,7 @@ public class MonitorHandler {
 
 			//e.printStackTrace();
 		}
-		return null;
+		return new Long[]{System.currentTimeMillis(),0L};
 	}
 
 	private Long[] processactivity(String data, String ipaddr){
@@ -162,7 +181,7 @@ public class MonitorHandler {
 		return new Long[]{System.currentTimeMillis(),lastactivity};
 	}
 
-	private long processbwidth(String data, String ipaddr){
+	private long processbandwidth(String data, String ipaddr){
 		if (data != null){
 
 			String[] rows = data.split("\n");
@@ -173,9 +192,10 @@ public class MonitorHandler {
 			if (rows.length > 2){
 
 				for (int i = 2; i < rows.length; i++){
-
+					Logger.info("%s", rows[i]);
 					String row[] = rows[i].split(DELIMETER);
 					if (row[2].equals(ipaddr)){
+						
 						lastbwrequest = Util.convertTs(row[0]) + 1;
 						return Long.valueOf(row[1]);
 					}

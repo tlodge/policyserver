@@ -15,13 +15,18 @@ import play.mvc.Controller;
 public class Monitor extends Controller {
 
 	
+	
+	
     public static void web(String device) {
     	
+    	//ArrayList<Website> sites = new ArrayList<Website>();
+    	//sites.add(new Website("aa:bb:cc:dd:ee:ff", "www.google.com", System.currentTimeMillis()));
     	renderJSON(MonitorHandler.sharedHandler().getLatestSites(device));
     }
 
     
     public static void bandwidth(String device){
+    	
     	renderJSON(MonitorHandler.sharedHandler().getLatestBandwidth(device));
     }
     

@@ -21,11 +21,12 @@ import models.policy.queries.Query;
 
 public class PollingThread extends Thread
 {
-	public static final String hwdbHost = "localhost"; //"10.2.0.2";
+	public static final String hwdbHost = "localhost"; //"10.2.0.2"; 
 
 	//private static final Logger logger = Logger.getLogger(PollingThread.class.getName());
 
 	private final int TIME_DELTA = 5000;
+	
 	private final JavaSRPC rpc = new JavaSRPC();
 
 
@@ -63,10 +64,13 @@ public class PollingThread extends Thread
 						updateLeases();
 
 						for (Query q : PolicyManager.sharedManager().activePolicies.values()){
-							String query = q.toString();
+							
+							
 
 							
 							if (q!=null){
+								
+								String query = q.toString();
 								
 								try {
 									

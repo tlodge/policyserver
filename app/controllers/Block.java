@@ -16,7 +16,7 @@ public class Block extends Controller{
 		
 		try{
 		
-			URL url = new URL("http://10.2.0.2/ws.v1/homework/deny/" + device);
+			URL url = new URL("http://localhost/ws.v1/homework/deny/" + device);
 			
 			URLConnection connection = url.openConnection();
 			

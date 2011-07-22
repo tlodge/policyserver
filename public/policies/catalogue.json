@@ -5,6 +5,7 @@
     
             "subjects":{
                         "dad":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57"],
+                        "mort":["00:00:00:00:00:00"],
                         "katie":["0000cccc"],   
                         "mum":["0000dddd"],
                         "john":["0000eeee"],
@@ -36,10 +37,11 @@
             "actions":{
 
                     "block":{
-                        "subjects":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57","0000cccc","0000dddd","0000eeee", "0000ffff"],
+                        "subjects":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57","00:00:00:00:00:00","0000cccc","0000dddd","0000eeee", "0000ffff"],
                         "arguments":{
                                 "18:E7:F4:79:52:B2":["dad"],
                                 "00:1f:f3:bc:b2:57":["dad"],
+                                "00:00:00:00:00:00":["mort"],
                                 "0000cccc":["katie"],   
                                 "0000dddd":["mum"],
                                 "0000eeee":["john"],
@@ -48,9 +50,10 @@
                     }, 
                         
                     "notify":{
-                        "subjects":["dad","mum","katie","john"],  
+                        "subjects":["dad","mort","mum","katie","john"],  
                         "arguments": {
                                 "dad": ["tweet","phone","mail","sound"],
+                                "mort": ["tweet","phone","mail","sound"],
                                 "katie": ["tweet","phone","mail","sound"],           
                                 "mum": ["tweet","phone","mail","sound"],
                                 "john": ["tweet","phone","mail","sound"]
@@ -83,6 +86,9 @@
                 },
                 "00:1f:f3:bc:b2:57":{
                     "name": "dad's macair"
+                },
+                "00:00:00:00:00:00":{
+                    "name": "mort's laptop"
                 },
                 "0000cccc":{
                     "name": "katie's desktop"   
@@ -142,7 +148,18 @@
                             "fired":"dadtold.png"
                     }
                 },
-                
+            "mort":
+                {
+                    "main":"mort.png",
+                    "block":{
+                            "action":"blockmort.png"
+                    },
+                    "notify":{
+                        "action":"notifymort.png",
+                        "result":"mortwaiting.png",
+                        "fired":"morttold.png"
+                    }
+                },
             "katie":
                 {
                     "main":"katie.png",
@@ -201,6 +218,15 @@
                     }
                 },
             "00:1f:f3:bc:b2:57":
+                {
+                    "main":"condlaptop",
+                    "block":{
+                            "action":"aslaptop.png",
+                            "result":"laptopunblocked.png",
+                            "fired":"laptopblocked.png"
+                    }
+                },
+            "00:00:00:00:00:00":
                 {
                     "main":"condlaptop",
                     "block":{

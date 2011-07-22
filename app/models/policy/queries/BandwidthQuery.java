@@ -2,6 +2,8 @@ package models.policy.queries;
 
 import java.util.Hashtable;
 
+import policy.PolicyManager;
+
 import models.policy.CallbackURL;
 import models.policy.Policy;
 
@@ -9,11 +11,23 @@ import datasource.LeaseData;
 
 public class BandwidthQuery extends Query{
 
-	long startTime = System.currentTimeMillis() -  (long) (1000 * 60 * 60  * 0.5); //last 1/2 hour;
-	final long BANDWIDTH_LIMIT = 5 * 1024 * 1024;
+	
+	//public static final long timeRange = System.currentTimeMillis() -  (long) (1000 * 60 * 5); //last 5 minutes;
+
+	//HACK FOR NOW...
+	public static final String subnet = "10.2.0.";
+	
+	public static final int timeRange = (60 * 5); //last 5 minutes;
+
+	public static final long BANDWIDTH_LIMIT = 5 * 1024 * 1024;
 		
+	/*
+	 * This query gets all incoming bytes for each machine that is not from the local subnet
+	 */
 	public BandwidthQuery(Policy p) {
+		
 		super(p);
+		
 		subject = p.subject;
 		
 		Object percent =  p.condition.arguments.get("percentage");
@@ -31,26 +45,27 @@ public class BandwidthQuery extends Query{
 		processor.process(data);
 		
 		if (processor.triggered()){
-			processor.reset();
 			
 			for (CallbackURL c : callbackurls)
 				c.call();
 			
+			PolicyManager.sharedManager().remove(policyid);
 		}		
 		
 	}
 
+
 	@Override
 	public String toString() {
-		final String s = String.format("@%016x@", startTime * 1000000);
-		String thequery = query.replace("[timeframe]", "[since " + s + "]");
-		String ipaddr = null;
+		//final String s = String.format("@%016x@", timeRange * 1000000);
+		String thequery = query.replace("[timeframe]", "[range " + timeRange + " seconds]");
+		//String ipaddr = null;
 		
-		if ( (ipaddr = LeaseData.sharedData().lookup(subject)) != null){
-			thequery = thequery.replace("[deviceaddr]", ipaddr);
+		//if ( (ipaddr = LeaseData.sharedData().lookup(subject)) != null){
+			thequery = thequery.replace("[deviceaddr]", subnet);//ipaddr);
 			return thequery;
-		}
-		return null;
+		//}
+		//return null;
 	}
 
 }

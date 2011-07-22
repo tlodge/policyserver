@@ -29,6 +29,7 @@ public class BandwidthDataProcessor extends DataProcessor {
     			System.err.println(rows[i]);
     			String row[] = rows[i].split(DELIMETER);
     			if (row[1].equals(ipaddr)){
+    				Logger.info("checking %s against %s", row[0], String.valueOf(triggerbytes));
     				if (Long.valueOf(row[0]) >= triggerbytes){
     					Logger.info("bandwidth triggered");
     					triggered = true;
