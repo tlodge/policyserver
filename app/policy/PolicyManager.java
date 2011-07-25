@@ -7,6 +7,9 @@ import homework.handler.MonitorHandler;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+
 import play.Logger;
 
 import com.thoughtworks.xstream.XStream;
@@ -55,11 +58,21 @@ public class PolicyManager {
 		return true;
 	}
 	
-	public void remove(String policyid){
+	/*public void remove(String policyid){
 		activePolicies.remove(policyid);
 		Logger.info("removed policy %s", policyid);
-	}
+	}*/
 	
+	public void removeTriggered(){
+		Iterator<Map.Entry<String,Query>> it = activePolicies.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry<String, Query> entry = it.next();
+			if (entry.getValue().triggered()){
+				Logger.info("removed policy %s",entry.getValue().policyId());
+				it.remove();
+			}
+		}
+	}
 	public String save (String policy){
 		boolean success  = true;
 		

@@ -100,6 +100,6 @@ public class CallbackURL {
 	}
 	
 	public void call(){
-		new Thread(r).run();
+		new Thread(r).start();
 	}
 }

@@ -16,13 +16,22 @@ public abstract class Query {
 	protected String query = null;
 	protected String subject;
 	protected DataProcessor processor;
-
+	protected boolean triggered;
 	
 	public Query(Policy p){
 		Logger.info("Registering policy id " + p.identity);
 		this.policyid = p.identity;
 		callbackurls = new ArrayList<CallbackURL>();
 		callbackurls.add(new CallbackURL(String.format("http://localhost:8080/policyserver/notify/policyclient/%s",p.identity)));
+		triggered = false;
+	}
+	
+	public String policyId(){
+		return policyid;
+	}
+	
+	public boolean triggered(){
+		return triggered;
 	}
 	
 	public abstract void process (String data);

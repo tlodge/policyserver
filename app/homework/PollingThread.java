@@ -6,7 +6,9 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Level;
 //import java.util.logging.Logger;
 import play.Logger;
@@ -21,14 +23,13 @@ import models.policy.queries.Query;
 
 public class PollingThread extends Thread
 {
-	public static final String hwdbHost = "localhost"; //"10.2.0.2"; 
+	public static final String hwdbHost = "localhost"; // "10.2.0.14"; //"10.2.0.2"; 
 
 	//private static final Logger logger = Logger.getLogger(PollingThread.class.getName());
 
 	private final int TIME_DELTA = 5000;
 	
 	private final JavaSRPC rpc = new JavaSRPC();
-
 
 	private void init(){
 
@@ -63,10 +64,9 @@ public class PollingThread extends Thread
 					{
 						updateLeases();
 
+						//Iterator<Query> it = PolicyManager.sharedManager().activePolicies.values().iterator();
 						for (Query q : PolicyManager.sharedManager().activePolicies.values()){
-							
-							
-
+						
 							
 							if (q!=null){
 								
@@ -74,20 +74,30 @@ public class PollingThread extends Thread
 								
 								try {
 									
+									Logger.info("calling query %s", query);
+									
 									String result = rpc.call(query);
 									
-									if (result != null)
+									
+									
+									if (result != null){
 										q.process(result);
+									}else{
+										Logger.info("result of query is null");
+									}
+									
 									
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
 							}
 						}
+						//Logger.info("removing triggered policies");
+						PolicyManager.sharedManager().removeTriggered();
 					}
 					catch (final Exception e)
 					{
-						Logger.error("rpc error %s", e.getMessage());
+						Logger.error(e, "rpc error %s", e.getMessage());
 					}
 
 					try

@@ -1,5 +1,6 @@
 package models.policy.queries;
 
+import play.Logger;
 import policy.PolicyManager;
 import models.policy.CallbackURL;
 import models.policy.Policy;
@@ -23,13 +24,18 @@ public class URLQuery extends Query{
 		
 		processor.process(data);
 		
+		Logger.info("Processing policy %s", policyid);
+		
 		if (processor.triggered()){
 			
+			Logger.info("POLICY %s TRIGGERED", policyid);
+			triggered = true;
 			
 			for (CallbackURL c : callbackurls)
 				c.call();
 			
-			PolicyManager.sharedManager().remove(policyid);
+			
+			//PolicyManager.sharedManager().remove(policyid);
 		}		
 	}
 
@@ -38,7 +44,7 @@ public class URLQuery extends Query{
 		String thequery = null;
 		
 		if (processor.last <= 0){
-			thequery = query.replace("[timeframe]", "[range 5 seconds]");
+			thequery = query.replace("[timeframe]", "[range 6 seconds]");
 			
 		}else{
 			final String s = String.format("@%016x@", processor.last * 1000000);

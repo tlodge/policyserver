@@ -24,7 +24,7 @@ public class MonitorHandler {
 
 	private static MonitorHandler sharedHandler = null;
 
-	public static final String hwdbHost =  "localhost";  //"10.2.0.2"; 
+	public static final String hwdbHost = "localhost";// "10.2.0.14";//  //"10.2.0.2"; 
 
 	//private static final Logger logger = Logger.getLogger(MonitorHandler.class.getName());
 

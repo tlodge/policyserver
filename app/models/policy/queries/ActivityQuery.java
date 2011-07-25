@@ -34,7 +34,9 @@ public class ActivityQuery extends Query {
 			for (CallbackURL c : callbackurls)
 				c.call();
 			
-			PolicyManager.sharedManager().remove(policyid);
+			triggered = true;
+			
+			//PolicyManager.sharedManager().remove(policyid);
 		}		
 		
 	}

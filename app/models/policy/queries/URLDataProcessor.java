@@ -30,7 +30,7 @@ public class URLDataProcessor extends DataProcessor{
 		
 		String[] rows = data.split("\n");
     	
-		last = 0;
+		last = 0L;
     	
     	if (rows.length > 2){
     		for (int i = 2; i < rows.length; i++){
