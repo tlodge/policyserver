@@ -42,16 +42,67 @@ public class CallbackURL {
 		};
 	}
 	
-	public CallbackURL(Policy p){
 	
+	private String generateMessage(Policy p){
+		
+		String message = String.format("Hello %s, device %s" + p.action.subject, p.subject);
+		
+		if (p.condition.type.equals("visiting")){
+			message +=  " visited one of ";
+			String[] mysites = (String[]) p.condition.arguments.get("sites");
+			for (String s : mysites)
+				message += s + " ";
+		}else if (p.condition.type.equals("bandwidth")){
+			message += " has used " + p.condition.arguments.get("percentage") + " % of the bandwidth limit ";
+		}else if (p.condition.type.equals("timed")){
+			message += " was used between " + p.condition.arguments.get("from") + " and " + p.condition.arguments.get("to");
+		}
+		
+		return message;
+	}
+	
+	public CallbackURL(Policy ptmp){
+			
+		final Policy p = ptmp;
+		
 			if (p.action.type.equals("notify")){
-							
+				
+				final String subtype = p.action.arguments[0];	
+				final String endpoint = p.action.subject;
+				/* add back policyserver in url */
 				r = new Runnable(){
 
 					@Override
 					public void run() {
 						try{
-							URL url= new URL("http://localhost:8080/policyserver/notify/push");
+							URL url= new URL(String.format("http://127.0.0.1:8080/policyserver/notify/%s/%s", endpoint, subtype));
+							//URL url= new URL(String.format("http://127.0.0.1:8080/notify/%s/%s", endpoint, subtype));
+							
+							URLConnection connection = url.openConnection();
+							
+							connection.setDoOutput(true);
+
+							OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+							
+							p.print();
+							
+							out.write(String.format("message=%s", generateMessage(p)));
+							
+							out.close();
+
+							BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+							String decodedString;
+
+							while ((decodedString = in.readLine()) != null) {
+								System.out.println(decodedString);
+							}
+								
+							
+							in.close();
+							
+							
+							/*URL url= new URL("http://localhost:8080/policyserver/notify/push/");
 							Logger.info("calling url %s", url.toString());
 							URLConnection c = url.openConnection();
 					        BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
@@ -60,7 +111,7 @@ public class CallbackURL {
 					        while ((inputLine = in.readLine()) != null) 
 					        	Logger.info(inputLine);
 					        in.close();
-
+							 */
 						}catch(Exception e){
 							e.printStackTrace();
 						}

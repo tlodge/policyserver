@@ -44,6 +44,7 @@ public class PollingThread extends Thread
 		{
 			while (true)
 			{
+				
 				if (!rpc.isConnected())
 				{
 					try
@@ -60,9 +61,10 @@ public class PollingThread extends Thread
 
 				while (rpc.isConnected())
 				{
+				
 					try
 					{
-						updateLeases();
+						//comented out for testing.. updateLeases();
 
 						//Iterator<Query> it = PolicyManager.sharedManager().activePolicies.values().iterator();
 						for (Query q : PolicyManager.sharedManager().activePolicies.values()){
@@ -71,6 +73,7 @@ public class PollingThread extends Thread
 							if (q!=null){
 								
 								String query = q.toString();
+								
 								
 								try {
 									

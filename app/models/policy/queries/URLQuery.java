@@ -21,6 +21,12 @@ public class URLQuery extends Query{
 	@Override
 	public void process (String data){
 		
+		/*
+		 * added for testing..
+		 */
+		if (data == null){
+			processor.triggered = true;
+		}
 		
 		processor.process(data);
 		

@@ -5,7 +5,7 @@
     
             "subjects":{
                         "dad":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57"],
-                        "mort":["00:00:00:00:00:00"],
+                        "mort":["aa:bb:cc:dd:ee:ff"],
                         "katie":["0000cccc"],   
                         "mum":["0000dddd"],
                         "john":["0000eeee"],
@@ -37,11 +37,11 @@
             "actions":{
 
                     "block":{
-                        "subjects":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57","00:00:00:00:00:00","0000cccc","0000dddd","0000eeee", "0000ffff"],
+                        "subjects":["18:E7:F4:79:52:B2","00:1f:f3:bc:b2:57","aa:bb:cc:dd:ee:ff","0000cccc","0000dddd","0000eeee", "0000ffff"],
                         "arguments":{
                                 "18:E7:F4:79:52:B2":["dad"],
                                 "00:1f:f3:bc:b2:57":["dad"],
-                                "00:00:00:00:00:00":["mort"],
+                                "aa:bb:cc:dd:ee:ff":["mort"],
                                 "0000cccc":["katie"],   
                                 "0000dddd":["mum"],
                                 "0000eeee":["john"],
@@ -87,7 +87,7 @@
                 "00:1f:f3:bc:b2:57":{
                     "name": "dad's macair"
                 },
-                "00:00:00:00:00:00":{
+                "aa:bb:cc:dd:ee:ff":{
                     "name": "mort's laptop"
                 },
                 "0000cccc":{
@@ -226,7 +226,7 @@
                             "fired":"laptopblocked.png"
                     }
                 },
-            "00:00:00:00:00:00":
+            "aa:bb:cc:dd:ee:ff":
                 {
                     "main":"condlaptop",
                     "block":{

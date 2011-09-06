@@ -76,7 +76,7 @@ public class MonitorHandler {
 
 			if (ipaddr != null){
 				if (lastbwrequest > 0){
-					Logger.info("last bw request is %s" , new Date(lastbwrequest).toString());
+					//Logger.info("last bw request is %s" , new Date(lastbwrequest).toString());
 					final String s 		 = String.format("@%016x@", lastbwrequest * 1000000);
 					sinceLastQuery 		 = String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [since %s] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr",s,BandwidthQuery.subnet, BandwidthQuery.subnet);		
 				}else{
@@ -84,8 +84,8 @@ public class MonitorHandler {
 				}
 				withinTimeRangeQuery =  String.format("SQL:select timestamp, sum(nbytes), daddr from Flows [range %d seconds] where daddr contains \"%s\" and saddr notcontains \"%s\" group by daddr", BandwidthQuery.timeRange,  BandwidthQuery.subnet, BandwidthQuery.subnet);
 				
-				Logger.info("BW since last query %s", sinceLastQuery);
-				Logger.info("BW withinTimeRange query %s", withinTimeRangeQuery);
+				//Logger.info("BW since last query %s", sinceLastQuery);
+				//Logger.info("BW withinTimeRange query %s", withinTimeRangeQuery);
 				
 				
 				String tr = rpc.call(withinTimeRangeQuery);

@@ -15,6 +15,8 @@ GET 	/monitor/activity/{device}				Monitor.activity
 
 GET		/notify/policyclient/{policyid}			Notify.policyclient
 
+POST	/notify/{endpoint}/{type}				Notify.endpoint
+
 POST 	/block/{device}							Block.block
 				
 POST	/policy/save/							Policy.save

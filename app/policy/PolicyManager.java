@@ -6,6 +6,7 @@ import homework.handler.MonitorHandler;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -85,6 +86,9 @@ public class PolicyManager {
 		xstream.alias("condition", Condition.class);
 		
 		Policy p = (Policy) xstream.fromXML(policy);
+		
+		//sites, percentage, {from, to}
+	
 		
 		String identity = store(p);
 		
