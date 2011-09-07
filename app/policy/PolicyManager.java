@@ -87,9 +87,6 @@ public class PolicyManager {
 		
 		Policy p = (Policy) xstream.fromXML(policy);
 		
-		//sites, percentage, {from, to}
-	
-		
 		String identity = store(p);
 		
 		if (identity != null){

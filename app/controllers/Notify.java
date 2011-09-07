@@ -1,5 +1,7 @@
 package controllers;
 
+import homework.handler.MonitorHandler;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,6 +33,7 @@ public class Notify extends Controller{
 		
 	public static void endpoint(String endpoint, String type){
 		Logger.info(String.format("INSERTING %s %s %s ",endpoint, type, params.get("message")));
+		MonitorHandler.sharedHandler().addNotificationRecord(endpoint, type, params.get("message"));
 	}
 		
 	public static void policyclient(String policyid){

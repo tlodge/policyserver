@@ -65,6 +65,20 @@ public class MonitorHandler {
 		return sharedHandler;
 	}
 
+	
+	public void addNotificationRecord(String endpoint, String type, String message){
+		String query = String.format("SQL: insert into NotificationRequest values (\"%s\",\"%s\",\"%s\")", endpoint,type,message);
+		Logger.info("calling query %s", query);
+		try{
+			String s = rpc.call(query);
+			Logger.info(s);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	
+	}
+	
+	
 	public Long[] getLatestBandwidth(String device){
 		
 		String sinceLastQuery = null;

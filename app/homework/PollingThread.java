@@ -23,7 +23,7 @@ import models.policy.queries.Query;
 
 public class PollingThread extends Thread
 {
-	public static final String hwdbHost = "localhost"; // "10.2.0.14"; //"10.2.0.2"; 
+	public static final String hwdbHost = "localhost"; //"10.2.0.2"; // "10.2.0.14"; //"10.2.0.2"; 
 
 	//private static final Logger logger = Logger.getLogger(PollingThread.class.getName());
 
@@ -64,7 +64,7 @@ public class PollingThread extends Thread
 				
 					try
 					{
-						//comented out for testing.. updateLeases();
+						updateLeases();
 
 						//Iterator<Query> it = PolicyManager.sharedManager().activePolicies.values().iterator();
 						for (Query q : PolicyManager.sharedManager().activePolicies.values()){

@@ -45,19 +45,20 @@ public class CallbackURL {
 	
 	private String generateMessage(Policy p){
 		
-		String message = String.format("Hello %s, device %s" + p.action.subject, p.subject);
+		String message = String.format("Hello %s, device %s", p.action.subject, p.subject);
 		
 		if (p.condition.type.equals("visiting")){
-			message +=  " visited one of ";
+			message +=  " visited one of the following: ";
 			String[] mysites = (String[]) p.condition.arguments.get("sites");
 			for (String s : mysites)
 				message += s + " ";
 		}else if (p.condition.type.equals("bandwidth")){
-			message += " has used " + p.condition.arguments.get("percentage") + " % of the bandwidth limit ";
+			message += " has used " + p.condition.arguments.get("percentage") + " percent of the bandwidth limit ";
 		}else if (p.condition.type.equals("timed")){
 			message += " was used between " + p.condition.arguments.get("from") + " and " + p.condition.arguments.get("to");
 		}
 		
+		System.err.println("message is " + message);
 		return message;
 	}
 	
@@ -75,7 +76,15 @@ public class CallbackURL {
 					@Override
 					public void run() {
 						try{
-							URL url= new URL(String.format("http://127.0.0.1:8080/policyserver/notify/%s/%s", endpoint, subtype));
+							System.err.println("subtype is " + subtype);
+							System.err.println("end point is " + endpoint);
+							
+							String strurl = (String.format("http://127.0.0.1:8080/policyserver/notify/%s/%s", endpoint, subtype));
+							//String strurl = (String.format("http://127.0.0.1:8080/notify/%s/%s", endpoint, subtype));
+							
+							System.err.println("CALLING URL " + strurl);
+							
+							URL url= new URL(strurl);
 							//URL url= new URL(String.format("http://127.0.0.1:8080/notify/%s/%s", endpoint, subtype));
 							
 							URLConnection connection = url.openConnection();
@@ -84,7 +93,7 @@ public class CallbackURL {
 
 							OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
 							
-							p.print();
+							//p.print();
 							
 							out.write(String.format("message=%s", generateMessage(p)));
 							

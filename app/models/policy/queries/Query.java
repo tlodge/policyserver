@@ -22,8 +22,13 @@ public abstract class Query {
 		Logger.info("Registering policy id " + p.identity);
 		this.policyid = p.identity;
 		callbackurls = new ArrayList<CallbackURL>();
-	
-		callbackurls.add(new CallbackURL(p));//String.format("http://localhost:8080/policyserver/notify/policyclient/%s",p.identity)));
+		
+		/*
+		 * By default, will send a push message to the device.
+		 */
+		callbackurls.add(new CallbackURL(String.format("http://localhost:8080/policyserver/notify/policyclient/%s",p.identity)));
+		//callbackurls.add(new CallbackURL(String.format("http://localhost:8080/notify/policyclient/%s",p.identity)));
+		
 		triggered = false;
 	}
 	

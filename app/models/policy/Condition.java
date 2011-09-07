@@ -8,9 +8,6 @@ public class Condition {
 	
 	public void print(){
 		System.out.println("condition type = " + type);
-		for (Object o: arguments.values()){
-			System.out.print(o.toString() + " ");
-		}
-		System.out.println();
+		System.out.println("args = " + arguments.toString());
 	}
 }
